@@ -7,6 +7,9 @@ const imgs = document.querySelectorAll('.randomCats')
 const favSection = document.querySelector('.favorites')
 const deleteAllBtn = document.querySelector('.deleteAll')
 const showAllBtn = document.querySelector('.showAll')
+const uploadBtn = document.querySelector('.upload')
+const previewImage = document.querySelector('.preview')
+const fileBox = document.querySelector('#file')
 let idArray=[]
 let imgsArray = [...imgs]
 let btnsArray = [...favBtn]
@@ -103,8 +106,6 @@ favSection.addEventListener('click', (event)=>{
     if(event.target.classList.contains('closeBtn')){
         let favIdDelete = event.target.id
         deleteFavouriteData(API, favIdDelete)
-/*         let parentElement = event.target.parentElement.parentElement
-        favElement.removeChild(parentElement) */
     }
 })
 showAllBtn.addEventListener('click', ()=>{callFavouriteData(API)})
@@ -112,5 +113,32 @@ deleteAllBtn.addEventListener('click', async ()=>{
     let toDelete = true
     callFavouriteData(API, toDelete)
 })
+uploadBtn.addEventListener('click', async ()=>{
+    try{
+        const form = document.getElementById('uploadForm')
+        const formData = new FormData(form);
+        const fullInfo = await fetchData(`${API}/images/upload?${apikey}`, {
+            method: 'POST',
+            headers:{
+                // 'Content-Type': 'multipart/formdata'
+            },
+            body: formData
+        })
+        const data = await fullInfo.json()
+        const idNewImage = data.id
+        console.log('Upload exitoso');
+        postFavouriteData(API, idNewImage)
+    }
+    catch(error){
+        console.log('Ha habido un error', error);
+    }
+})
+fileBox.onchange = ()=>{
+    const file = fileBox.files[0]
+    console.log(file);
+    if(file){
+        previewImage.src=URL.createObjectURL(file)
+    }
+}
 
 callRandomData(API)
